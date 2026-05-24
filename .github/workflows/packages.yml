@@ -20,6 +20,8 @@ jobs:
             triple: x86_64-linux-gnu
             qemu: x86_64
             pkg_config: ""
+            compiler: gdc
+            ldcflags: ""
           - arch: arm64
             runner: ubuntu-24.04-arm
             fpm_deb: arm64
@@ -27,6 +29,8 @@ jobs:
             triple: aarch64-linux-gnu
             qemu: aarch64
             pkg_config: ""
+            compiler: gdc
+            ldcflags: ""
           - arch: armhf
             runner: ubuntu-latest
             fpm_deb: armhf
@@ -34,6 +38,8 @@ jobs:
             triple: arm-linux-gnueabihf
             qemu: arm
             pkg_config: "/usr/lib/arm-linux-gnueabihf/pkgconfig"
+            compiler: ldc2
+            ldcflags: "-mtriple=arm-linux-gnueabihf"
           - arch: riscv64
             runner: ubuntu-latest
             fpm_deb: riscv64
@@ -41,21 +47,23 @@ jobs:
             triple: riscv64-linux-gnu
             qemu: riscv64
             pkg_config: "/usr/lib/riscv64-linux-gnu/pkgconfig"
+            compiler: ldc2
+            ldcflags: "-mtriple=riscv64-linux-gnu"
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
-          sudo add-apt-repository universe -y
           sudo apt-get update
-          sudo apt-get install -y gdc libjson-c-dev ruby ruby-dev build-essential \
+          sudo apt-get install -y gdc ldc libjson-c-dev ruby ruby-dev build-essential \
             qemu-user-static binfmt-support pkg-config
           sudo gem install fpm --no-document
 
       - name: Configure cross-compilation
         run: |
-          echo "DCC=gdc" >> $GITHUB_ENV
+          echo "DCC=${{ matrix.compiler }}" >> $GITHUB_ENV
+          echo "LDCFLAGS=${{ matrix.ldcflags }}" >> $GITHUB_ENV
           if [ -n "${{ matrix.pkg_config }}" ]; then
             echo "PKG_CONFIG_PATH=${{ matrix.pkg_config }}" >> $GITHUB_ENV
             echo "PKG_CONFIG_ALLOW_CROSS=1" >> $GITHUB_ENV
@@ -64,8 +72,13 @@ jobs:
       - name: Build binary & library
         run: |
           make clean
-          make DCC=gdc
-          make libjsonmod.so DCC=gdc
+          if [ -n "${{ matrix.ldcflags }}" ]; then
+            make -j$(nproc) DCC=ldc2 LDCFLAGS="${{ matrix.ldcflags }}"
+            make -j$(nproc) libjsonmod.so DCC=ldc2 LDCFLAGS="${{ matrix.ldcflags }}"
+          else
+            make -j$(nproc) DCC=gdc
+            make -j$(nproc) libjsonmod.so DCC=gdc
+          fi
 
       - name: Validate binary (QEMU)
         run: |
