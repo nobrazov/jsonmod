@@ -13,7 +13,6 @@ jobs:
     strategy:
       matrix:
         include:
-          # Нативная сборка
           - arch: amd64
             runner: ubuntu-latest
             fpm_deb: amd64
@@ -28,7 +27,6 @@ jobs:
             triple: aarch64-linux-gnu
             qemu: aarch64
             pkg_config: ""
-          # Кросс-компиляция (ldc2 + LLVM)
           - arch: armhf
             runner: ubuntu-latest
             fpm_deb: armhf
@@ -120,7 +118,7 @@ jobs:
           retention-days: 5
 
       - name: Attach to Release
-        if: github.event_name == 'release'
+        if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v2
         with:
           files: |
