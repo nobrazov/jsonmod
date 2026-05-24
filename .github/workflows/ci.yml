@@ -16,17 +16,17 @@ jobs:
         run: |
           if apt list --installed 2>/dev/null | grep -q "^gdc/"; then
             echo "✅ gdc already installed"
-            echo "DC=gdc" >> $GITHUB_ENV
+            echo "DCC=gdc" >> $GITHUB_ENV
           else
             echo "⚠️ gdc not found, will use ldc2"
-            echo "DC=ldc2" >> $GITHUB_ENV
+            echo "DCC=ldc2" >> $GITHUB_ENV
           fi
 
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libjson-c-dev
-          if [ "$DC" = "ldc2" ]; then
+          if [ "$DCC" = "ldc2" ]; then
             sudo apt-get install -y ldc
           fi
 
@@ -36,6 +36,6 @@ jobs:
 
       - name: Build & Test
         run: |
-          make DC=$DC clean
-          make DC=$DC
-          make DC=$DC test
+          make DCC=$DCC clean
+          make DCC=$DCC
+          make DCC=$DCC test
