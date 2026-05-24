@@ -9,14 +9,14 @@
 
 # --- Compiler & flags ---------------------------------------------------------
 # Компилятор и флаги / Compiler and flags / 编译器和标志
-DCC        := gdc
-DCCFLAGS   := -Wall -Wextra -Os -fPIC -Isrc -I/usr/include/json-c \
-              -fdata-sections -ffunction-sections -flto
-# В v0.1 достаточно json-c. -lpq добавлен для v0.3 (postgres).
-# Если libpq-dev не установлен, уберите -lpq из этой строки.
-DLIBS      := -L/usr/lib/arm-linux-gnueabihf -ljson-c -lpq
-LDFLAGS_A  := -static-libgcc -static-libphobos -s \
-              -Wl,--gc-sections -Wl,--strip-all -Wl,-O1 -Wl,--as-needed
+DCC := gdc
+DCCFLAGS := -Wall -Wextra -Os -fPIC -Isrc -I/usr/include/json-c \
+ -fdata-sections -ffunction-sections -flto
+# В v0.1 достаточно json-c. добавлен для v0.3 (postgres).
+# Если libpq-dev не установлен, уберите из этой строки.
+DLIBS := -ljson-c 
+LDFLAGS_A := -static-libgcc -static-libphobos -s \
+ -Wl,--gc-sections -Wl,--strip-all -Wl,-O1 -Wl,--as-needed
 LDFLAGS_SO := -shared -fPIC -s -Wl,--gc-sections -Wl,-O1
 
 # --- OCP Registry: include user-editable lists --------------------------------
@@ -46,11 +46,11 @@ MODULES := $(filter-out $(outgoing), $(sort $(COMMON_MODULES) $(incoming))) $(PR
 # Разделяем модули ядра и exec-обёртки
 # Separate library modules and exec wrapper
 # 分离库模块和 exec 包装器
-LIB_MODS  := $(filter-out src/exec/%,$(MODULES))
+LIB_MODS := $(filter-out src/exec/%,$(MODULES))
 EXEC_MODS := $(filter src/exec/%,$(MODULES))
 
-LIB_SRCS  := $(LIB_MODS)
-LIB_OBJS  := $(LIB_SRCS:.d=.o)
+LIB_SRCS := $(LIB_MODS)
+LIB_OBJS := $(LIB_SRCS:.d=.o)
 
 EXEC_SRCS := $(EXEC_MODS)
 EXEC_OBJS := $(EXEC_SRCS:.d=.o)
@@ -131,15 +131,15 @@ src/%.o: src/%.d
 # Справка / Help / 帮助
 help:
 	@echo "JSONmod Build Targets:"
-	@echo "  make               — build all + test | собрать всё + тест | 构建全部 + 测试"
-	@echo "  make libjsonmod.a  — static library | статическая библиотека | 静态库"
-	@echo "  make libjsonmod.so — dynamic library | динамическая библиотека | 动态库"
-	@echo "  make exec          — pipe utility 'jsonmod' | утилита 'jsonmod' | 管道工具 'jsonmod'"
-	@echo "  make perl-driver   — build Perl XS wrapper | собрать Perl XS-обёртку | 构建 Perl XS 包装器"
-	@echo "  make test          — run jq acceptance test | запустить тест с jq | 运行 jq 验收测试"
-	@echo "  make clean         — remove build artifacts | удалить артефакты сборки | 清除构建产物"
+	@echo " make — build all + test | собрать всё + тест | 构建全部 + 测试"
+	@echo " make libjsonmod.a — static library | статическая библиотека | 静态库"
+	@echo " make libjsonmod.so — dynamic library | динамическая библиотека | 动态库"
+	@echo " make exec — pipe utility 'jsonmod' | утилита 'jsonmod' | 管道工具 'jsonmod'"
+	@echo " make perl-driver — build Perl XS wrapper | собрать Perl XS-обёртку | 构建 Perl XS 包装器"
+	@echo " make test — run jq acceptance test | запустить тест с jq | 运行 jq 验收测试"
+	@echo " make clean — remove build artifacts | удалить артефакты сборки | 清除构建产物"
 	@echo ""
 	@echo "OCP Registry:"
-	@echo "  Add module:   echo 'src/protocols/new.d' >> incoming.mk"
-	@echo "  Remove:       echo 'src/old.d' >> outgoing.mk"
-	@echo "  Active list:  computed automatically (common + incoming - outgoing)"
+	@echo " Add module: echo 'src/protocols/new.d' >> incoming.mk"
+	@echo " Remove: echo 'src/old.d' >> outgoing.mk"
+	@echo " Active list: computed automatically (common + incoming - outgoing)"
