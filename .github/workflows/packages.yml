@@ -79,12 +79,12 @@ jobs:
           mkdir -p pkg/usr/bin pkg/usr/lib pkg/etc/profile.d
           cp jsonmod pkg/usr/bin/
           cp libjsonmod.so pkg/usr/lib/
-          cat > pkg/etc/profile.d/jsonmod.sh << 'EOF'
+          cat > pkg/etc/profile.d/jsonmod.sh << 'PROFILE'
           export JSONMOD_BIN="/usr/bin"
           export JSONMOD_LIB="/usr/lib"
           export JSONMOD_VERSION="${{ env.VERSION }}"
           export PATH="/usr/bin:$PATH"
-          EOF
+          PROFILE
 
       - name: Build .deb
         run: |
