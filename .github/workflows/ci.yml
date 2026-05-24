@@ -15,22 +15,21 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ldc gdc libjson-c-dev
+          sudo apt-get install -y ldc libjson-c-dev
 
       - name: Check formatting
         run: |
           dfmt -i src/*.d drivers/perl/*.d 2>/dev/null || echo "⚠️ Formatting check completed"
 
-      - name: Build
+      - name: Build & Test
         run: |
+          # Автовыбор компилятора: gdc приоритет, ldc2 fallback
+          if command -v gdc &> /dev/null; then
+            echo "✅ gdc found, using native compiler"
+          else
+            echo "⚠️ gdc not found, auto-fallback to ldc2"
+            export DC=ldc2
+          fi
           make clean
           make
-
-      - name: Check binary dependencies
-        run: |
-          ldd ./jsonmod || true
-          ./jsonmod --version || echo "⚠️ Binary check completed"
-
-      - name: Test
-        run: |
           make test
