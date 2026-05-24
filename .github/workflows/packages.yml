@@ -47,15 +47,15 @@ jobs:
 
       - name: Install dependencies
         run: |
+          sudo add-apt-repository universe -y
           sudo apt-get update
-          sudo apt-get install -y ldc libjson-c-dev ruby ruby-dev build-essential \
+          sudo apt-get install -y gdc libjson-c-dev ruby ruby-dev build-essential \
             qemu-user-static binfmt-support pkg-config
           sudo gem install fpm --no-document
 
       - name: Configure cross-compilation
         run: |
-          echo "DC=ldc2" >> $GITHUB_ENV
-          echo "LDCFLAGS=-mtriple=${{ matrix.triple }}" >> $GITHUB_ENV
+          echo "DCC=gdc" >> $GITHUB_ENV
           if [ -n "${{ matrix.pkg_config }}" ]; then
             echo "PKG_CONFIG_PATH=${{ matrix.pkg_config }}" >> $GITHUB_ENV
             echo "PKG_CONFIG_ALLOW_CROSS=1" >> $GITHUB_ENV
@@ -64,8 +64,8 @@ jobs:
       - name: Build binary & library
         run: |
           make clean
-          make DFLAGS="${{ env.LDCFLAGS }}"
-          make libjsonmod.so DFLAGS="${{ env.LDCFLAGS }}"
+          make DCC=gdc
+          make libjsonmod.so DCC=gdc
 
       - name: Validate binary (QEMU)
         run: |

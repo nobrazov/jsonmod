@@ -39,13 +39,13 @@ jobs:
 
       - name: Install dependencies
         run: |
+          sudo add-apt-repository universe -y
           sudo apt-get update
-          sudo apt-get install -y ldc libjson-c-dev qemu-user-static binfmt-support pkg-config
+          sudo apt-get install -y gdc libjson-c-dev qemu-user-static binfmt-support pkg-config
 
       - name: Configure cross-compilation
         run: |
-          echo "DC=ldc2" >> $GITHUB_ENV
-          echo "LDCFLAGS=-mtriple=${{ matrix.triple }}" >> $GITHUB_ENV
+          echo "DCC=gdc" >> $GITHUB_ENV
           if [ -n "${{ matrix.pkg_path }}" ]; then
             echo "PKG_CONFIG_PATH=${{ matrix.pkg_path }}" >> $GITHUB_ENV
             echo "PKG_CONFIG_ALLOW_CROSS=1" >> $GITHUB_ENV
@@ -54,15 +54,15 @@ jobs:
       - name: Build binaries
         run: |
           make clean
-          make DFLAGS="${{ env.LDCFLAGS }}"
-          make libjsonmod.so DFLAGS="${{ env.LDCFLAGS }}"
+          make DCC=gdc
+          make libjsonmod.so DCC=gdc
 
       - name: Validate binary
         run: |
           if [ -n "${{ matrix.qemu_cmd }}" ]; then
-            echo '{"test":"ok"}' | ${{ matrix.qemu_cmd }} ./jsonmod > /dev/null
+            echo '{"test": "ok"}' | ${{ matrix.qemu_cmd }} ./jsonmod > /dev/null
           else
-            echo '{"test":"ok"}' | ./jsonmod > /dev/null
+            echo '{"test": "ok"}' | ./jsonmod > /dev/null
           fi
           echo "✅ ${{ matrix.arch }} binary validated"
 
