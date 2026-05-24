@@ -1,0 +1,1 @@
+{"cpu_limit": @%{"resources/cpu"} "file://test/donors/service.json"}

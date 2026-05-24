@@ -1,0 +1,77 @@
+# === COMPILED BINARIES ===
+jsonmod
+libjsonmod.so
+*.a
+*.o
+*.so
+*.dll
+*.dylib
+*.exe
+
+# === BACKUP / TEMP / STRAY FILES ===
+*.txt
+!LICENSE.*
+!README.md
+!CONTRIBUTING.md
+!CHANGELOG.md
+!SECURITY.md
+1.txt
+Makefile.txt
+*~
+*.swp
+*.bak
+*.tmp
+
+# === BUILD ARTIFACTS ===
+pkg/
+.dub/
+dub.selections.json
+dub.json
+__dummy.html
+*.dSYM/
+
+# === PERL / XS ===
+blib/
+*.bs
+pm_to_blib
+MYMETA.json
+MYMETA.yml
+Makefile.old
+_eumm/
+*.pod
+.perl-version
+
+# === C / GCC ===
+*.gcno
+*.gcda
+*.gcov
+
+# === CI / RELEASE / PACKAGES ===
+*.deb
+*.rpm
+*.tar.gz
+*.zip
+*.7z
+*.pkg
+
+# === IDE / EDITORS ===
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.sublime-*
+.project
+.settings/
+
+# === LOGS / DUMPS / ENV ===
+*.log
+tmp/
+temp/
+test_output/
+.cache/
+.env
+*.env
+dump/
+
+# === DOCS (только UPPERCASE.ML.MD) ===
+docs/*[a-z]*

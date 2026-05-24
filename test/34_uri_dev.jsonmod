@@ -1,0 +1,3 @@
+target = "env_dev"
+ext = "json"
+{"env_config": @%{"env"} "file://test/donors/${target}.${ext}"}

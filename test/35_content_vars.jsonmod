@@ -1,0 +1,4 @@
+USERNAME = "deploy"
+ENV = "staging"
+DEBUG = true
+{"auth": @%{"user"} "file://test/donors/tmpl.jsonmo"}

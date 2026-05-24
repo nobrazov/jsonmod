@@ -1,0 +1,4 @@
+{
+"database": @%{"primary"} "file://test/donors/obj.json",
+"database": @%{"fallback"} "file://test/donors/obj.json"
+}

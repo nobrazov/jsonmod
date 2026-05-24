@@ -1,0 +1,5 @@
+{
+"base": {"env": "prod"},
+"overrides": @${"props"} "file://test/donors/flat.json",
+"locked": true
+}

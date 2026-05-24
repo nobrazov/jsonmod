@@ -1,0 +1,5 @@
+{
+"app": "auth-service",
+"config": @%{"cfg"} "file://test/donors/obj.json",
+"status": "running"
+}

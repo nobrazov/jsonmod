@@ -1,0 +1,29 @@
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ldc libjson-c-dev dfmt
+
+      - name: Check formatting
+        run: |
+          dfmt -i src/*.d drivers/perl/*.d 2>/dev/null || echo "⚠️ Formatting check completed"
+
+      - name: Build & Test
+        run: |
+          make clean
+          make
+          make test

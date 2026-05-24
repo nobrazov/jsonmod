@@ -1,0 +1,3 @@
+{
+"config": @%{"must_be_obj"} "file://test/donors/mismatch.json"
+}

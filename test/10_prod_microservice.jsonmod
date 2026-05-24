@@ -1,0 +1,9 @@
+DB_PASS = "s3cur3_p@ss"
+JWT = "tok_99x"
+{
+"service": "order-processor",
+"version": "3.4.1",
+"infra": @%{"svc_cfg"} "file://test/donors/service.json",
+"secrets": @%{"vault"} "file://test/donors/secrets.jsonmo",
+"routes": @@{"api"} "file://test/donors/routes.json"
+}

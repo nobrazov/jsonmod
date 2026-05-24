@@ -1,0 +1,130 @@
+name: Build .deb / .rpm packages
+
+on:
+  release:
+    types: [published]
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  package:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          # Нативная сборка
+          - arch: amd64
+            runner: ubuntu-latest
+            fpm_deb: amd64
+            fpm_rpm: x86_64
+            triple: x86_64-linux-gnu
+            qemu: x86_64
+            pkg_config: ""
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+            fpm_deb: arm64
+            fpm_rpm: aarch64
+            triple: aarch64-linux-gnu
+            qemu: aarch64
+            pkg_config: ""
+          # Кросс-компиляция (ldc2 + LLVM)
+          - arch: armhf
+            runner: ubuntu-latest
+            fpm_deb: armhf
+            fpm_rpm: armv7hl
+            triple: arm-linux-gnueabihf
+            qemu: arm
+            pkg_config: "/usr/lib/arm-linux-gnueabihf/pkgconfig"
+          - arch: riscv64
+            runner: ubuntu-latest
+            fpm_deb: riscv64
+            fpm_rpm: riscv64
+            triple: riscv64-linux-gnu
+            qemu: riscv64
+            pkg_config: "/usr/lib/riscv64-linux-gnu/pkgconfig"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ldc libjson-c-dev ruby ruby-dev build-essential \
+            qemu-user-static binfmt-support pkg-config
+          sudo gem install fpm --no-document
+
+      - name: Configure cross-compilation
+        run: |
+          echo "DC=ldc2" >> $GITHUB_ENV
+          echo "LDCFLAGS=-mtriple=${{ matrix.triple }}" >> $GITHUB_ENV
+          if [ -n "${{ matrix.pkg_config }}" ]; then
+            echo "PKG_CONFIG_PATH=${{ matrix.pkg_config }}" >> $GITHUB_ENV
+            echo "PKG_CONFIG_ALLOW_CROSS=1" >> $GITHUB_ENV
+          fi
+
+      - name: Build binary & library
+        run: |
+          make clean
+          make DFLAGS="${{ env.LDCFLAGS }}"
+          make libjsonmod.so DFLAGS="${{ env.LDCFLAGS }}"
+
+      - name: Validate binary (QEMU)
+        run: |
+          echo '{"test":"ok"}' | qemu-${{ matrix.qemu }}-static ./jsonmod > /dev/null
+          echo "✅ Binary validated for ${{ matrix.arch }}"
+
+      - name: Prepare package layout
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          mkdir -p pkg/usr/bin pkg/usr/lib pkg/etc/profile.d
+          cp jsonmod pkg/usr/bin/
+          cp libjsonmod.so pkg/usr/lib/
+          cat > pkg/etc/profile.d/jsonmod.sh << 'EOF'
+          export JSONMOD_BIN="/usr/bin"
+          export JSONMOD_LIB="/usr/lib"
+          export JSONMOD_VERSION="${{ env.VERSION }}"
+          export PATH="/usr/bin:$PATH"
+          EOF
+
+      - name: Build .deb
+        run: |
+          fpm -s dir -t deb \
+            -n jsonmod -v ${{ env.VERSION }} -a ${{ matrix.fpm_deb }} \
+            --depends "libjson-c5" \
+            --description "Modular JSON composition engine" \
+            --license "GPL-3.0 / FDL-1.3 / AS-IS / Commercial" \
+            --url "https://github.com/${{ github.repository }}" \
+            -p jsonmod_${{ env.VERSION }}_${{ matrix.arch }}.deb \
+            pkg/
+
+      - name: Build .rpm
+        run: |
+          fpm -s dir -t rpm \
+            -n jsonmod -v ${{ env.VERSION }} -a ${{ matrix.fpm_rpm }} \
+            --depends "json-c" \
+            --description "Modular JSON composition engine" \
+            --license "GPL-3.0 / FDL-1.3 / AS-IS / Commercial" \
+            --url "https://github.com/${{ github.repository }}" \
+            -p jsonmod-${{ env.VERSION }}-${{ matrix.fpm_rpm }}.rpm \
+            pkg/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ matrix.arch }}
+          path: |
+            *.deb
+            *.rpm
+          retention-days: 5
+
+      - name: Attach to Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            *.deb
+            *.rpm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

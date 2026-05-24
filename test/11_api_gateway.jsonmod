@@ -1,0 +1,8 @@
+{
+"gateway": {
+"version": "2.8.0",
+"cors": {"origins": ["*"], "methods": ["GET", "POST"]},
+@%{"routing"} "file://test/donors/routes.json",
+"auth": @%{"provider"} "file://test/donors/obj.json"
+}
+}

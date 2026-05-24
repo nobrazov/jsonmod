@@ -1,0 +1,7 @@
+{
+"gateway": {
+"name": "api-edge",
+"upstream": @%{"svc"} "file://test/donors/service.json",
+"routes": @@{"endpoints"} "file://test/donors/routes.json"
+}
+}

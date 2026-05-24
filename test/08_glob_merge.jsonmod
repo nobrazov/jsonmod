@@ -1,0 +1,6 @@
+{
+"pipeline": {
+"name": "data-ingest",
+"sources": @@{"parts"} "file://test/donors/glob_*.json"
+}
+}

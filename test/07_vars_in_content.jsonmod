@@ -1,0 +1,6 @@
+USERNAME = "admin"
+ENV = "production"
+DEBUG = false
+{
+"security": @%{"creds"} "file://test/donors/tmpl.jsonmo"
+}

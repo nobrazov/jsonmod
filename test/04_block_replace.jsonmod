@@ -1,0 +1,6 @@
+{
+"name": "payment-core",
+"version": "2.1.0",
+@%{"database"} "file://test/donors/deep.json",
+"logging": "stdout"
+}

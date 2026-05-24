@@ -1,0 +1,5 @@
+target = "obj"
+ext = "json"
+{
+"dynamic_load": @%{"data"} "file://test/donors/${target}.${ext}"
+}

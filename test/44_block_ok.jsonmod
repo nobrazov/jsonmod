@@ -1,0 +1,5 @@
+{
+  "meta": {"ver": "1.0"},
+  @%{"app"} "file://test/donors/config.json",
+  "footer": "done"
+}
