@@ -12,10 +12,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Detect D compiler
+        run: |
+          if apt list --installed 2>/dev/null | grep -q "^gdc/"; then
+            echo "✅ gdc already installed"
+            echo "DC=gdc" >> $GITHUB_ENV
+          else
+            echo "⚠️ gdc not found, will use ldc2"
+            echo "DC=ldc2" >> $GITHUB_ENV
+          fi
+
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ldc libjson-c-dev
+          sudo apt-get install -y libjson-c-dev
+          if [ "$DC" = "ldc2" ]; then
+            sudo apt-get install -y ldc
+          fi
 
       - name: Check formatting
         run: |
@@ -23,13 +36,6 @@ jobs:
 
       - name: Build & Test
         run: |
-          # Автовыбор компилятора: gdc приоритет, ldc2 fallback
-          if command -v gdc &> /dev/null; then
-            echo "✅ gdc found, using native compiler"
-          else
-            echo "⚠️ gdc not found, auto-fallback to ldc2"
-            export DC=ldc2
-          fi
-          make clean
-          make
-          make test
+          make DC=$DC clean
+          make DC=$DC
+          make DC=$DC test
