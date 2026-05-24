@@ -12,23 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Detect D compiler
+      - name: Enable universe repository and install GDC
         run: |
-          if apt list --installed 2>/dev/null | grep -q "^gdc/"; then
-            echo "✅ gdc already installed"
-            echo "DCC=gdc" >> $GITHUB_ENV
-          else
-            echo "⚠️ gdc not found, will use ldc2"
-            echo "DCC=ldc2" >> $GITHUB_ENV
-          fi
-
-      - name: Install dependencies
-        run: |
+          sudo add-apt-repository universe
           sudo apt-get update
-          sudo apt-get install -y libjson-c-dev
-          if [ "$DCC" = "ldc2" ]; then
-            sudo apt-get install -y ldc
-          fi
+          sudo apt-get install -y gdc libjson-c-dev
 
       - name: Check formatting
         run: |
@@ -36,6 +24,6 @@ jobs:
 
       - name: Build & Test
         run: |
-          make DCC=$DCC clean
-          make DCC=$DCC
-          make DCC=$DCC test
+          make DCC=gdc clean
+          make DCC=gdc
+          make DCC=gdc test
