@@ -1,4 +1,3 @@
-# .github/workflows/ci.yml
 name: CI
 
 on:
@@ -22,8 +21,16 @@ jobs:
         run: |
           dfmt -i src/*.d drivers/perl/*.d 2>/dev/null || echo "⚠️ Formatting check completed"
 
-      - name: Build & Test
+      - name: Build
         run: |
           make clean
           make
+
+      - name: Check binary dependencies
+        run: |
+          ldd ./jsonmod || true
+          ./jsonmod --version || echo "⚠️ Binary check completed"
+
+      - name: Test
+        run: |
           make test

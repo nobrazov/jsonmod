@@ -11,7 +11,7 @@
 # Компилятор и флаги / Compiler and flags / 编译器和标志
 DCC := gdc
 DCCFLAGS := -Wall -Wextra -Os -fPIC -Isrc -I/usr/include/json-c \
- -fdata-sections -ffunction-sections -flto
+ -fdata-sections -ffunction-sections 
 # В v0.1 достаточно json-c. добавлен для v0.3 (postgres).
 # Если libpq-dev не установлен, уберите из этой строки.
 DLIBS := -ljson-c 
@@ -79,9 +79,9 @@ libjsonmod.so: $(LIB_OBJS)
 
 # Exec-обёртка (pipe-entry point) / Exec wrapper (pipe-entry point)
 # Exec 包装器（管道入口点）
-# RU: Для -flto линкуем все .o напрямую, чтобы LTO видел _ModuleInfoZ каждого модуля
-# EN: For -flto, link all .o directly so LTO sees _ModuleInfoZ of every module
-# ZH: 使用 -flto 时直接链接所有 .o，确保 LTO 能识别每个模块的 _ModuleInfoZ
+# RU: Для линкуем все .o напрямую, чтобы LTO видел _ModuleInfoZ каждого модуля
+# EN: For , link all .o directly so LTO sees _ModuleInfoZ of every module
+# ZH: 使用 时直接链接所有 .o，确保 LTO 能识别每个模块的 _ModuleInfoZ
 exec: $(LIB_OBJS) $(EXEC_OBJS)
 	$(DCC) $(DCCFLAGS) $(LDFLAGS_A) -Wl,-rpath,'$$ORIGIN' -o jsonmod $(LIB_OBJS) $(EXEC_OBJS) $(DLIBS)
 	@echo "✓ jsonmod built | ✓ jsonmod собран | ✓ jsonmod 已构建"
