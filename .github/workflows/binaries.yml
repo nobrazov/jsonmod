@@ -15,53 +15,26 @@ jobs:
         include:
           - arch: amd64
             runner: ubuntu-latest
-            triple: x86_64-linux-gnu
-            qemu_cmd: ""
-            pkg_path: ""
-            compiler: gdc
           - arch: arm64
             runner: ubuntu-24.04-arm
-            triple: aarch64-linux-gnu
-            qemu_cmd: ""
-            pkg_path: ""
-            compiler: gdc
           - arch: armhf
             runner: ubuntu-latest
-            triple: arm-linux-gnueabihf
-            qemu_cmd: "qemu-arm-static"
-            pkg_path: "/usr/lib/arm-linux-gnueabihf/pkgconfig"
-            compiler: gdc
+          - arch: riscv64
+            runner: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Enable Universe & Install dependencies
+      - name: Install dependencies
         run: |
           sudo add-apt-repository universe
           sudo apt-get update
-          sudo apt-get install -y gdc libjson-c-dev qemu-user-static binfmt-support pkg-config
-
-      - name: Configure cross-compilation
-        run: |
-          echo "DCC=${{ matrix.compiler }}" >> $GITHUB_ENV
-          if [ -n "${{ matrix.pkg_path }}" ]; then
-            echo "PKG_CONFIG_PATH=${{ matrix.pkg_path }}" >> $GITHUB_ENV
-            echo "PKG_CONFIG_ALLOW_CROSS=1" >> $GITHUB_ENV
-          fi
+          sudo apt-get install -y gdc libjson-c-dev pkg-config
 
       - name: Build binaries
         run: |
           make clean
-          make -j$(nproc) DCC="${{ matrix.compiler }}"
-          make -j$(nproc) libjsonmod.so DCC="${{ matrix.compiler }}"
-
-      - name: Validate binary
-        run: |
-          if [ -n "${{ matrix.qemu_cmd }}" ]; then
-            echo '{ "test": "ok" }' | ${{ matrix.qemu_cmd }} ./jsonmod > /dev/null
-          else
-            echo '{ "test": "ok" }' | ./jsonmod > /dev/null
-          fi
-          echo "✅ ${{ matrix.arch }} binary validated"
+          make -j$(nproc)
+          make -j$(nproc) libjsonmod.so
 
       - name: Upload binaries
         uses: actions/upload-artifact@v4

@@ -102,7 +102,8 @@ make clean         # Очистка / Clean / 清理
 | `ERRORS.ML.MD` | Диагностика кодов сбоев и фиксы |
 | `SECURITY.ML.MD` | Эксплуатация, харденинг, чеклист |
 | `PERL.DEVELOPER.GUIDE.ML.MD` | Использование XS-драйвера |
-| `PERL.MOJOLICIOUS.DEVELOPER.GUIDE.ML.MD` | Интеграция в контроллеры/хелперы |
+| `PERL.MOJOLICIOUS.DEVELOPER.GUIDE.ML.MD` | Интеграция в контроллеры/хелперы |  
+| `LANGUAGE.REFERENCE.MD` | Справочник команд |
 
 ---
 ##  Лицензии / Licenses / 许可协议
@@ -119,6 +120,7 @@ make clean         # Очистка / Clean / 清理
 **ZH:** 项目采用三重许可分发。请选择适用的一项：GPL v3（开源修改）、FDL 1.3（文档）、AS-IS（内部使用）、Commercial（闭源解决方案）。
 
 📬 **Commercial-запросы / Commercial inquiries / 商业咨询:**  
+
 `nobrazov@list.ru` \| DingTalk: `aqd-hvkkk0xex` \| GitHub Issues: `type:commercial`
 ---
 
@@ -127,7 +129,7 @@ make clean         # Очистка / Clean / 清理
 - **Версия / Version / 版本:** `0.2`
 - **Архитектура / Architecture / 架构:** D + `libjson-c`
 - **Протокол / Protocol / 协议:** `file://`
-- **Лицензия / License / 许可证:** MIT
+- **Лицензия / License / 许可证:** GPLv3+Commerce
 
 ---
 
