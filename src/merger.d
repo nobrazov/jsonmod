@@ -343,7 +343,22 @@ JMObject* fetchAndApply(string marker, JMObject* root = null) {
 	// EN: Centralized var resolution in raw donor JSON
 	// ZH: 原始捐赠者 JSON 中的集中变量解析
 	string donorText = resolveVarsInText(rawContent[0]);
-	JMObject* src = parseSkeleton(donorText);
+
+	// --- 0.3 RECURSION: Полная обработка включаемого файла ---
+	// Сохраняем состояние родителя, чтобы рекурсия не затерла его контекст
+	ResolutionState savedState = g_state;
+	string[string] savedUsed = g_usedKeys.dup;  // ← просто добавь .dup
+
+	// Рекурсивный вызов: прогоняем файл через весь конвейер jsonmod
+	JSONValue childResult = buildAndResolve(donorText);
+
+	// Восстанавливаем состояние родителя
+	g_state = savedState;
+	g_usedKeys = savedUsed;
+
+	// Преобразуем результат обратно в json-c объект для работы селекторов
+	JMObject* src = parseSkeleton(serializeTree(childResult));
+	// -----------------------------------------------------------
 	int srcType = json_object_get_type(src);
 	string[] tokens = tokenizeSelector(selector);
 	
