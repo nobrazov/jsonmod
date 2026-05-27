@@ -1,5 +1,4 @@
 name: Build .deb / .rpm packages
-
 on:
   release:
     types: [published]
@@ -11,6 +10,7 @@ jobs:
   package:
     runs-on: ${{ matrix.runner }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           - arch: amd64
@@ -40,16 +40,6 @@ jobs:
             pkg_config: "/usr/lib/arm-linux-gnueabihf/pkgconfig"
             compiler: ldc2
             ldcflags: "-mtriple=arm-linux-gnueabihf"
-          - arch: riscv64
-            runner: ubuntu-latest
-            fpm_deb: riscv64
-            fpm_rpm: riscv64
-            triple: riscv64-linux-gnu
-            qemu: riscv64
-            pkg_config: "/usr/lib/riscv64-linux-gnu/pkgconfig"
-            compiler: ldc2
-            ldcflags: "-mtriple=riscv64-linux-gnu"
-
     steps:
       - uses: actions/checkout@v4
 
@@ -82,7 +72,7 @@ jobs:
 
       - name: Validate binary (QEMU)
         run: |
-          echo '{"test":"ok"}' | qemu-${{ matrix.qemu }}-static ./jsonmod > /dev/null
+          echo '{ "test": "ok" }' | qemu-${{ matrix.qemu }}-static ./jsonmod > /dev/null
           echo "✅ Binary validated for ${{ matrix.arch }}"
 
       - name: Prepare package layout

@@ -1,5 +1,4 @@
 name: Build Binaries
-
 on:
   release:
     types: [published]
@@ -11,6 +10,7 @@ jobs:
   build:
     runs-on: ${{ matrix.runner }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           - arch: amd64
@@ -34,14 +34,6 @@ jobs:
             pkg_path: "/usr/lib/arm-linux-gnueabihf/pkgconfig"
             compiler: ldc2
             ldcflags: "-mtriple=arm-linux-gnueabihf"
-          - arch: riscv64
-            runner: ubuntu-latest
-            triple: riscv64-linux-gnu
-            qemu_cmd: "qemu-riscv64-static"
-            pkg_path: "/usr/lib/riscv64-linux-gnu/pkgconfig"
-            compiler: ldc2
-            ldcflags: "-mtriple=riscv64-linux-gnu"
-
     steps:
       - uses: actions/checkout@v4
 
@@ -73,9 +65,9 @@ jobs:
       - name: Validate binary
         run: |
           if [ -n "${{ matrix.qemu_cmd }}" ]; then
-            echo '{"test":"ok"}' | ${{ matrix.qemu_cmd }} ./jsonmod > /dev/null
+            echo '{ "test": "ok" }' | ${{ matrix.qemu_cmd }} ./jsonmod > /dev/null
           else
-            echo '{"test":"ok"}' | ./jsonmod > /dev/null
+            echo '{ "test": "ok" }' | ./jsonmod > /dev/null
           fi
           echo "✅ ${{ matrix.arch }} binary validated"
 
