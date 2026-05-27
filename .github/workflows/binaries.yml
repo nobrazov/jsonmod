@@ -4,6 +4,7 @@ on:
     types: [published]
   push:
     tags: ['v*']
+    branches-ignore: ['v[0123456789].[3579]', '*-experimental']
   workflow_dispatch:
 
 jobs:
@@ -45,12 +46,15 @@ jobs:
             libjsonmod.so
           retention-days: 5
 
+      - name: Package binaries for release
+        run: |
+          tar -czf jsonmod-${{ matrix.arch }}.tar.gz jsonmod libjsonmod.so
+
       - name: Attach binaries to Release
         if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            jsonmod
-            libjsonmod.so
+            jsonmod-${{ matrix.arch }}.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

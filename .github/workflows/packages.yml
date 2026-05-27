@@ -4,6 +4,7 @@ on:
     types: [published]
   push:
     tags: ['v*']
+    branches-ignore: ['v[0123456789].[3579]*', '*-experimental']
   workflow_dispatch:
 
 jobs:
@@ -36,7 +37,7 @@ jobs:
         run: |
           sudo add-apt-repository universe
           sudo apt-get update
-          sudo apt-get install -y gdc libjson-c-dev ruby ruby-dev build-essential pkg-config
+          sudo apt-get install -y gdc libjson-c-dev ruby ruby-dev build-essential pkg-config libpq-dev
           sudo gem install fpm --no-document
 
       - name: Build binary & library
