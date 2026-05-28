@@ -43,45 +43,6 @@ void writeToStderr(string msg) {
 	core.sys.posix.unistd.write(2, cast(const(void)*)"\n".ptr, 1);
 }
 
-// --- Экранирование строк для JSON / Escape JSON strings / JSON 字符串转义
-/**  * Экранирует специальные символы в строке для корректной сериализации JSON
- * @param s - исходная строка
- * @return экранированная строка
- */
-string escapeJSON(string s) {
-	string r = s;
-	r = r.replace("\\", "\\\\");
-	r = r.replace("\"", "\\\"");
-	r = r.replace("\n", "\\n");
-	r = r.replace("\r", "\\r");
-	r = r.replace("\t", "\\t");
-	return r;
-}
-
-// --- Детерминированный сериализатор / Deterministic serializer / 确定性序列化器
-string serializeTree(JSONValue v) {
-	if (v.type == JSONType.object) {
-		string[] pairs;
-		foreach (k, val; v.object)
-			pairs ~= "\"" ~ escapeJSON(k) ~ "\":" ~ serializeTree(val);
-		return "{" ~ pairs.join(",") ~ "}";
-		// Аналогичная обработка для массивов и примитивных типов
-	}
-	if (v.type == JSONType.array) {
-		string[] items;
-		foreach (val; v.array)
-			items ~= serializeTree(val);
-		return "[" ~ items.join(",") ~ "]";
-	}
-	if (v.type == JSONType.string)  return "\"" ~ escapeJSON(v.str) ~ "\"";
-	if (v.type == JSONType.integer) return v.integer.to!string;
-	if (v.type == JSONType.float_)  return v.floating.to!string;
-	if (v.type == JSONType.true_)   return "true";
-	if (v.type == JSONType.false_)  return "false";
-	if (v.type == JSONType.null_)   return "null";
-	return "null";
-}
-
 // Основная точка входа в API
 /**
  * Основная функция обработки JSON

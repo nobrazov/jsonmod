@@ -1,7 +1,7 @@
 {
-  "service": {
-    "name": @%{"name"} "file://test/donors/config.json",
-    "limits": @%{"max_conn"} "file://test/donors/limits.json",
-    "paths": @%{"root"} "file://test/donors/paths.json"
-  }
+"service": {
+"name": @%{"name"} "file://test/donors/config.json",
+"limits": @%{"max_conn"} "file://test/donors/limits.json",
+"paths": @%{"root"} "file://test/donors/paths.json"
+}
 }

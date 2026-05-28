@@ -1,0 +1,2 @@
+target = "rec_var_start"
+{"final": @%{"root"} "file://test/donors/${target}.jsonmod"}

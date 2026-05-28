@@ -1,4 +1,4 @@
 {"gateway": {
-  "name": "edge",
-  "routes": @@{0} "file://test/donors/routes.json"
+"name": "edge",
+"routes": @@{0} "file://test/donors/routes.json"
 }}

@@ -1,1 +1,1 @@
-[{"cluster_id": "prod-eu-1", "region": "eu-west-2"}]
+[{"cluster_id": "prod-eu-1", "region": "eu-west-2", "target": {"id": 1, "name": "main"}}]

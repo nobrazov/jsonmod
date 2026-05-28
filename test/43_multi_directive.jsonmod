@@ -1,4 +1,4 @@
 {
-  "app_name": @%{"name"} "file://test/donors/config.json",
-  "db_port": @%{"port"} "file://test/donors/config.json"
+"app_name": @%{"name"} "file://test/donors/config.json",
+"db_port": @%{"port"} "file://test/donors/config.json"
 }

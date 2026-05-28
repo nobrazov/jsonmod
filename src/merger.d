@@ -337,6 +337,18 @@ JMObject* fetchAndApply(string marker, JMObject* root = null) {
 
 	string resolvedUri = resolveVarsInText(uri);
 	string[] rawContent = fetchByScheme(resolvedUri, "");
+// --- WARN: .json с директивами / WARN: .json with directives / 警告：.json 含指令
+// RU: Если файл имеет расширение .json, но содержит @%|@@|@$ — это семантически грязно
+// EN: If file has .json extension but contains @%|@@|@$ — semantically unclear
+// ZH: 如果文件扩展名为 .json 但包含 @%|@@|@$ — 语义不清晰
+	if (resolvedUri.endsWith(".json") || resolvedUri.endsWith(".json\"")) {
+	    string content = rawContent.length > 0 ? rawContent[0] : "";
+	    if (content.indexOf("@%") != -1 || content.indexOf("@@") != -1 || content.indexOf("@$") != -1) {
+	        Logger("WARN: .json file contains jsonmod directives: " ~ resolvedUri, "WARNING");
+	    }
+	}
+// -----------------------------------------------------------
+	
 	if (rawContent.length == 0) throw new Exception("ERR_EMPTY_RESULT");
 	
 	// RU: Централизованный резолв переменных в сыро JSON донора
@@ -650,5 +662,50 @@ JSONValue buildAndResolve(string rawInput) {
 	return result;
 }
 
+
+// --- Утилиты сериализации / Serialization utils / 序列化工具
+// RU: Перенесены из api.d для избежания циклической зависимости. Вызываются ядром и C-API
+// EN: Moved from api.d to avoid circular dependency. Used by core and C-API
+// ZH: 从 api.d 移至此处以避免循环依赖。核心与 C-API 共用
+
+// --- Экранирование строк для JSON / Escape JSON strings / JSON 字符串转义
+/**  * Экранирует специальные символы в строке для корректной сериализации JSON
+ * @param s - исходная строка
+ * @return экранированная строка
+ */
+
+string escapeJSON(string s) {
+    string r = s;
+    r = r.replace("\\", "\\\\");
+    r = r.replace("\"", "\\\"");
+    r = r.replace("\n", "\\n");
+    r = r.replace("\r", "\\r");
+    r = r.replace("\t", "\\t");
+    return r;
+}
+
+// --- Детерминированный сериализатор / Deterministic serializer / 确定性序列化器
+string serializeTree(JSONValue v) {
+    if (v.type == JSONType.object) {
+        string[] pairs;
+        foreach (k, val; v.object)
+            pairs ~= "\"" ~ escapeJSON(k) ~ "\":" ~ serializeTree(val);
+        return "{" ~ pairs.join(",") ~ "}";
+        		// Аналогичная обработка для массивов и примитивных типов
+    }
+    if (v.type == JSONType.array) {
+        string[] items;
+        foreach (val; v.array)
+            items ~= serializeTree(val);
+        return "[" ~ items.join(",") ~ "]";
+    }
+    if (v.type == JSONType.string)  return "\"" ~ escapeJSON(v.str) ~ "\"";
+    if (v.type == JSONType.integer) return v.integer.to!string;
+    if (v.type == JSONType.float_)  return v.floating.to!string;
+    if (v.type == JSONType.true_)   return "true";
+    if (v.type == JSONType.false_)  return "false";
+    if (v.type == JSONType.null_)   return "null";
+    return "null";
+}
 // --- Вспомогательные функции / Helper functions / 辅助函数
 bool isJsonDelimiter(char c) { return c == ',' || c == '}' || c == ']' || c == ' ' || c == '\t' || c == '\n'; }

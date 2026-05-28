@@ -1,1 +1,1 @@
-{"id": 1, "name": "core", "active": true}
+{"id": 1, "name": "core", "active": true, "cfg": {"db": "postgres"}, "primary": {"host": "localhost"}, "fallback": {"host": "backup"}, "provider": {"auth": "oauth2"}}

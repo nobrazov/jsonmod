@@ -1,0 +1,4 @@
+{
+"left": @%{"data"} "file://test/donors/rec_multi_left.json",
+"right": @%{"data"} "file://test/donors/rec_multi_right.json"
+}

@@ -5,5 +5,5 @@ JWT = "tok_99x"
 "version": "3.4.1",
 "infra": @%{"svc_cfg"} "file://test/donors/service.json",
 "secrets": @%{"vault"} "file://test/donors/secrets.jsonmo",
-"routes": @@{"api"} "file://test/donors/routes.json"
+"routes": @@ "file://test/donors/routes.json"
 }
